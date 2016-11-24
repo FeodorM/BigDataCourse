@@ -159,9 +159,9 @@ street = {
 }
 
 print('processing houses')
-with open(os.path.join(path, 'houses.txt'), 'w') as f:
-    print('дом;улица;город;область', file=f)
-    template = '{};{};Воронеж;Воронежская область'
+with open(os.path.join(path, 'houses.csv'), 'w') as f:
+    print('дом,улица,город,область', file=f)
+    template = '{},{},Воронеж,Воронежская область'
     for r in tqdm(get_db('DOMA')):
         if r['CODE'].startswith(voronezh):
             for d in r['NAME'].split(','):
