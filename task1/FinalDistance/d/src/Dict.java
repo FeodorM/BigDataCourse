@@ -3,7 +3,7 @@ import org.apache.hadoop.hive.ql.exec.UDF;
 public class Dict extends UDF{
 	double distance;
 	
-	public double Distance (double llat1, double llong1,double llat2,double llong2){
+	public double evaluate (double llat1, double llong1,double llat2,double llong2){
 		//pi - число pi, rad - радиус сферы (Земли)
         int rad = 6372795;
         
