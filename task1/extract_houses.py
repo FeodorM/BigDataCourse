@@ -144,29 +144,32 @@ for r in tqdm(get_db('STREET')):
 '''
 
 # More functional way (little bit faster (~.2--2 sec))
-print('precessing cladr')
+print('precessing cladr...')
 cladr = {
     cladr_code(r['CODE']): r['NAME']
     for r in tqdm(get_db('KLADR'))
     if r['CODE'].startswith(voronezh) and r['CODE'].endswith('00')
 }
 
-print('processing streets')
+print('processing streets...')
 street = {
     street_code(r['CODE']): socrs[r['SOCR']] + ' ' + r['NAME']
     for r in tqdm(get_db('STREET'))
     if r['CODE'].startswith(voronezh) and r['CODE'].endswith('00')
 }
 
-print('processing houses')
-with open(os.path.join(path, 'houses.csv'), 'w') as f:
-    print('дом,улица,город,область', file=f)
-    template = '{},{},Воронеж,Воронежская область'
+print('processing houses...')
+with open(os.path.join(path, 'houses_from_cladr.csv'), 'w') as f:
+    # print('дом,улица,город,область', file=f)
+    template = '{} {} Воронеж Воронежская область'
     for r in tqdm(get_db('DOMA')):
         if r['CODE'].startswith(voronezh):
             for d in r['NAME'].split(','):
                 if not d.startswith('соор'):
-                    print(template.format(
-                        process_house(d),
-                        street[street_code(r['CODE'])]  # , cladr[cladr_code(r['CODE'])]
-                    ), file=f)
+                    try:
+                        print(template.format(
+                            process_house(d),
+                            street[street_code(r['CODE'])]
+                        ), file=f)
+                    except KeyError:
+                        print(d)
