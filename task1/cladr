@@ -1,6 +1,23 @@
 #!/usr/bin/env sh
+
+# sudo yum install p7zip python3 python34-setuptools
+# sudo python3 /usr/lib/python3.4/site-packages/easy_install.py pip
+# sudo pip3 install tqdm geocoder dbfread
+
 wget -P $1 http://gnivc.ru/html/gnivcsoft/KLADR/Base.7z
 7za x $1/Base.7z -o$1
 rm $1/Base.7z
 python3 extract_houses.py $1
-rm $1/*\.DBF
+rm $1/*\.dbf
+
+python3 geocoding.py $1/houses_from_cladr.csv $1/houses.csv --fake
+python3 filter_global_cells.py fake_global_cells.csv $1/cells.csv
+
+hadoop fs -mkdir /user/hue/houses /user/hue/cells
+hadoop fs -put $1/houses.csv /user/hue/houses
+hadoop fs -put $1/cells.csv /user/hue/cells
+hadoop fs -put FinalDistance/Distance.jar /user/hue/
+hive -f hivestuff
+hadoop fs -get /apps/hive/warehouse/result/000000_0 $1/result
+
+python3 prepare_for_visualization.py $1

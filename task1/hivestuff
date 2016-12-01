@@ -1,0 +1,37 @@
+CREATE EXTERNAL TABLE cell (
+  clon DOUBLE,
+  clat DOUBLE
+)
+COMMENT 'cells coordinates'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/hue/cells';
+
+CREATE EXTERNAL TABLE house (
+  hlat DOUBLE,
+  hlon DOUBLE
+)
+COMMENT 'houses coordinates'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/hue/houses';
+
+CREATE TABLE IF NOT EXISTS result (
+	lat DOUBLE,
+	lon DOUBLE,
+	count BIGINT
+);
+
+CREATE TEMPORARY FUNCTION distance AS 'Dict' USING JAR 'hdfs:///user/hue/Distance.jar';
+
+INSERT OVERWRITE TABLE result
+SELECT cell.clat, cell.clon, count(1)
+FROM cell, house
+WHERE (cell.clat IS NOT NULL AND
+       cell.clon IS NOT NULL AND
+	   house.hlat IS NOT NULL AND
+	   house.hlon IS NOT NULL AND
+	   distance(cell.clat, cell.clon, house.hlat, house.hlon) <= 1500)
+GROUP BY cell.clat, cell.clon;
