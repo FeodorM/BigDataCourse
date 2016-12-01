@@ -144,7 +144,7 @@ for r in tqdm(get_db('STREET')):
 '''
 
 # More functional way (little bit faster (~.2--2 sec))
-print('precessing cladr...')
+print('processing cladr...')
 cladr = {
     cladr_code(r['CODE']): r['NAME']
     for r in tqdm(get_db('KLADR'))
@@ -171,5 +171,5 @@ with open(os.path.join(path, 'houses_from_cladr.csv'), 'w') as f:
                             process_house(d),
                             street[street_code(r['CODE'])]
                         ), file=f)
-                    except KeyError:
+                    except (KeyError, UnicodeEncodeError):
                         print(d)
