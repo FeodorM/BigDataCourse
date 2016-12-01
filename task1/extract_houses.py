@@ -171,5 +171,6 @@ with open(os.path.join(path, 'houses_from_cladr.csv'), 'w') as f:
                             process_house(d),
                             street[street_code(r['CODE'])]
                         ), file=f)
-                    except (KeyError, UnicodeEncodeError):
-                        print(d)
+                    except KeyError:
+                        # print(d)
+                        pass
